@@ -1,0 +1,36 @@
+# Environment variables
+.env
+
+# Docker volumes
+postgres-data/
+
+# Flowise data
+.flowise/
+
+# Logs
+*.log
+logs/
+
+# Node.js dependencies
+node_modules/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor folders
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Build output
+dist/
+build/
+
+# Miscellaneous
+*.bak
+*.cache

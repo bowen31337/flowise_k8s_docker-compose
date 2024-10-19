@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flowise
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flowise
+  template:
+    metadata:
+      labels:
+        app: flowise
+    spec:
+      containers:
+      - name: flowise
+        image: flowiseai/flowise:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_TYPE
+          value: postgres
+        - name: DATABASE_HOST
+          value: postgres-service
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: flowise-secrets
+              key: POSTGRES_USER
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: flowise-secrets
+              key: POSTGRES_PASSWORD
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: flowise-secrets
+              key: POSTGRES_DB
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: flowise-secrets
+              key: API_KEY
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: flowise-storage
+          mountPath: /root/.flowise
+      volumes:
+      - name: flowise-storage
+        persistentVolumeClaim:
+          claimName: flowise-pvc
